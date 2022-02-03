@@ -10,7 +10,7 @@ namespace ConsoleApp1
         {
             
 
-            Console.WriteLine("Welcome To Game Suite");
+            Console.WriteLine("Welcome to the Game Suite");
             string state = "Menu";
             while (state != "Exit")
             {
@@ -33,6 +33,7 @@ namespace ConsoleApp1
         }
         static string NaughtsAndCrosses()
         {
+            //todo
             Dictionary<string, string> PlayersDict =
               new Dictionary<string, string>(){
                 {"1", "1 Player"},
