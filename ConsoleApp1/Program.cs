@@ -33,13 +33,47 @@ namespace ConsoleApp1
         }
         static string NaughtsAndCrosses()
         {
+
             //todo
+            bool over = false;
             Dictionary<string, string> PlayersDict =
               new Dictionary<string, string>(){
                 {"1", "1 Player"},
                 {"2", "2 Players" } };
-            string numPlayers = GetInput(PlayersDict,"Please choose how many players want to play").Item1;
+            Dictionary<string, string> XorO =
+              new Dictionary<string, string>(){
+                {"1", "X"},
+                {"2", "O" } };
+            int turn = 1;
+            int numPlayers = Int16.Parse(GetInput(PlayersDict,"Please choose how many players want to play").Item2);
+            string player1 = GetInput(XorO, "Player 1 choose your todo").Item1;
+            if (numPlayers == 2) { string player2 = GetInput(PlayersDict, "Player 2 choose your todo").Item1; }
+            string[,] board = { {" "," "," " }, { " ", " ", " " }, { " ", " ", " " }, };
+
+            
+            PrintBoard(board);
+            do
+            {
+                Console.WriteLine("player 1 it is your turn to choose");
+                int choice1 = GetZeroToNine(board);
+                board[(int)choice1 / 3 -1, choice1 % 3 - 1] = player1;
+
+            } while (over == false);
+            
             return "Menu";
+        }
+        static void PrintBoard(string[,] board)
+        {
+            Console.WriteLine("    1     2     3");
+            Console.WriteLine("       |     |      ");
+            Console.WriteLine("1:  {0}  |  {1}  |  {2}", board[0,0], board[0,1], board[0,2]);
+            Console.WriteLine("  _____|_____|_____ ");
+            Console.WriteLine("       |     |      ");
+            Console.WriteLine("2:  {0}  |  {1}  |  {2}", board[1,0], board[1,1], board[1,2]);
+            Console.WriteLine("  _____|_____|_____ ");
+            Console.WriteLine("       |     |      ");
+            Console.WriteLine("3:  {0}  |  {1}  | {2}", board[2,0], board[2,1], board[2,2]);
+            Console.WriteLine("       |     |      ");
         }
         static string ScissorsPaperRock()
         {
@@ -109,5 +143,29 @@ namespace ConsoleApp1
             Console.WriteLine(option);
             return (option, input);
         }
+        static int GetZeroToNine(string[,] board)
+        {
+            int choice = 0;
+            bool once = false;
+            bool valid = false;
+            
+            
+
+            do
+            {
+                if (once == false) { Console.WriteLine("Your input was not valid please try again"); }
+                PrintBoard(board);
+
+
+                Console.WriteLine("Please choose the row you wish to place:");
+                string input = Console.ReadLine();
+                int.TryParse(input, out choice);
+                if (choice > 0 && choice < 10) { valid = true; }
+                once = true;
+            } while (valid == false);
+            
+            return choice;
+        }
     }
 }
+
