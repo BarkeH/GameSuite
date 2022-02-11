@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Reflection;
 
@@ -8,7 +8,7 @@ namespace ConsoleApp1
     {
         static void Main(string[] args)
         {
-            
+
 
             Console.WriteLine("Welcome to the Game Suite");
             string state = "Menu";
@@ -45,35 +45,49 @@ namespace ConsoleApp1
                 {"1", "X"},
                 {"2", "O" } };
             int turn = 1;
-            int numPlayers = Int16.Parse(GetInput(PlayersDict,"Please choose how many players want to play").Item2);
+            int numPlayers = Int16.Parse(GetInput(PlayersDict, "Please choose how many players want to play").Item2);
             string player1 = GetInput(XorO, "Player 1 choose your todo").Item1;
-            if (numPlayers == 2) { string player2 = GetInput(PlayersDict, "Player 2 choose your todo").Item1; }
-            string[,] board = { {" "," "," " }, { " ", " ", " " }, { " ", " ", " " }, };
+            string player2 = "X";
+            if (player1 == "X") { player2 = "O"; }
+            string[] board = { " ", " ", " " ,  " ", " ", " " ,  " ", " ", " " };
+            string gameOver = "";
 
-            
             PrintBoard(board);
             do
             {
                 Console.WriteLine("player 1 it is your turn to choose");
                 int choice1 = GetZeroToNine(board);
-                board[(int)choice1 / 3 -1, choice1 % 3 - 1] = player1;
+                board[choice1 - 1] = player1;
 
-            } while (over == false);
-            
+                gameOver = checkOver(board);
+                Console.Write(gameOver == "");
+                Console.Write(gameOver == " ");
+                Console.WriteLine("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+
+                if (gameOver != "") { Console.WriteLine("fuck me dead why is it not working"); break; }
+
+                int choice2 = GetZeroToNine(board);
+                board[choice2 - 1] = player2;
+
+                gameOver = checkOver(board);
+
+            } while (gameOver == "");
+            Console.WriteLine("slkdafkasjdfklsadflj;xagfdjhdsfkgjhasdfjghsdljkfvhkjdsfhbvklsjdfhgkjsdfhgljksdfhvlkhsdfgjhdasriofghsdfgusdfgiuhsdfughdrsuiogvasdfgdfgsdfgdfgsdfgsdfgsdfgdfgsdfg");
+            GameOver(gameOver, board, player1, player2); 
+
             return "Menu";
         }
-        static void PrintBoard(string[,] board)
+        static void PrintBoard(string[] board)
         {
-            Console.WriteLine("    1     2     3");
-            Console.WriteLine("       |     |      ");
-            Console.WriteLine("1:  {0}  |  {1}  |  {2}", board[0,0], board[0,1], board[0,2]);
-            Console.WriteLine("  _____|_____|_____ ");
-            Console.WriteLine("       |     |      ");
-            Console.WriteLine("2:  {0}  |  {1}  |  {2}", board[1,0], board[1,1], board[1,2]);
-            Console.WriteLine("  _____|_____|_____ ");
-            Console.WriteLine("       |     |      ");
-            Console.WriteLine("3:  {0}  |  {1}  | {2}", board[2,0], board[2,1], board[2,2]);
-            Console.WriteLine("       |     |      ");
+            Console.WriteLine("     |     |      ");
+            Console.WriteLine("  {0}  |  {1}  |  {2}", board[0], board[ 1], board[ 2]);
+            Console.WriteLine("_____|_____|_____ ");
+            Console.WriteLine("     |     |      ");
+            Console.WriteLine("  {0}  |  {1}  |  {2}", board[3], board[4], board[5]);
+            Console.WriteLine("_____|_____|_____ ");
+            Console.WriteLine("     |     |      ");
+            Console.WriteLine("  {0}  |  {1}  | {2}", board[6], board[7], board[8]);
+            Console.WriteLine("     |     |      ");
         }
         static string ScissorsPaperRock()
         {
@@ -113,7 +127,7 @@ namespace ConsoleApp1
             return "Menu";
 
         }
-        static (string,string) GetInput(Dictionary<string, string> Options, string initialWrite)
+        static Tuple<string,string> GetInput(Dictionary<string, string> Options, string initialWrite)
         {
             string option;
             bool valid = false;
@@ -141,31 +155,67 @@ namespace ConsoleApp1
             }
             while (valid == false);
             Console.WriteLine(option);
-            return (option, input);
+            return Tuple.Create(option, input);
         }
-        static int GetZeroToNine(string[,] board)
+        static int GetZeroToNine(string[] board)
         {
             int choice = 0;
             bool once = false;
             bool valid = false;
-            
-            
+
+
 
             do
             {
-                if (once == false) { Console.WriteLine("Your input was not valid please try again"); }
+                if (once == true) { Console.WriteLine("Your input was not valid please try again"); }
                 PrintBoard(board);
 
 
                 Console.WriteLine("Please choose the row you wish to place:");
                 string input = Console.ReadLine();
-                int.TryParse(input, out choice);
-                if (choice > 0 && choice < 10) { valid = true; }
+                valid = int.TryParse(input, out choice);
+                if (choice < 0 && choice > 10) { valid = false; }
+                else if (board[choice - 1] != " ") { valid = false; }
                 once = true;
             } while (valid == false);
-            
+
             return choice;
+        }
+        static string checkOver(string[] board) {
+
+            bool tie = true;
+            foreach (string i in board)
+            {
+                Console.WriteLine(tie);
+                if (i == " ") { tie = false;  }
+            }
+
+            if ( tie == true) { return "tie"; }
+            string win = "";
+            for (int i = 0; i<3; i++)
+            {
+                if (board[i] == board[i + 1] && board[i] == board[i+2]) { win = board[i]; break; }
+                if (board[i] == board[i + 3] && board[i] == board[i + 6]) { win = board[i]; break; }
+            }
+            if (board[0] == board[4] && board[0] == board[8]) { win = board[0]; }
+            if (board[2] == board[4] && board[2] == board[6]) { win = board[2]; }
+            Console.Write(win);
+            Console.WriteLine("fuck fuck fuck");
+            return win;
+        }
+        static void GameOver(string whoWon, string[] board, string player1, string player2)
+        {
+            PrintBoard(board);
+            if (whoWon == "tie") { Console.WriteLine("The game was a tie"); }
+            if (whoWon == "X") {
+                if (player1 == "X") { Console.WriteLine("Player 1 won"); }
+                else { Console.WriteLine("Player 2 won"); }
+            }
+            if (whoWon == "O")
+            {
+                if (player1 == "O") { Console.WriteLine("Player 1 won"); }
+                else { Console.WriteLine("Player 2 won"); }
+            }
         }
     }
 }
-
