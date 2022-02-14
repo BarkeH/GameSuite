@@ -40,53 +40,85 @@ namespace ConsoleApp1
               new Dictionary<string, string>(){
                 {"1", "1 Player"},
                 {"2", "2 Players" } };
+            Dictionary<string, string> Difficulty =
+              new Dictionary<string, string>(){
+                {"1", "Easy"},
+                {"2", "Medium" } };
+
+
             Dictionary<string, string> XorO =
               new Dictionary<string, string>(){
                 {"1", "X"},
                 {"2", "O" } };
             int turn = 1;
             int numPlayers = Int16.Parse(GetInput(PlayersDict, "Please choose how many players want to play").Item2);
+
+            if (numPlayers == 1) { string robotDiff = GetInput(Difficulty, "Please choose the difficulty of the AI").Item1; }
+            
+
             string player1 = GetInput(XorO, "Player 1 choose your todo").Item1;
             string player2 = "X";
             if (player1 == "X") { player2 = "O"; }
+
+
+
             string[] board = { " ", " ", " " ,  " ", " ", " " ,  " ", " ", " " };
             string gameOver = "";
-
+            int choice1 = 0;
+            int choice2 = 0;
             PrintBoard(board);
             do
             {
                 Console.WriteLine("player 1 it is your turn to choose");
-                int choice1 = GetZeroToNine(board);
+                choice1 = GetZeroToNine(board);
                 board[choice1 - 1] = player1;
 
                 gameOver = checkOver(board);
-                Console.Write(gameOver == "");
-                Console.Write(gameOver == " ");
-                Console.WriteLine("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+               
+                if (gameOver != "no") {  break; }
 
-                if (gameOver != "") { Console.WriteLine("fuck me dead why is it not working"); break; }
-
-                int choice2 = GetZeroToNine(board);
+                if (numPlayers == 2)
+                {
+                     choice2 = GetZeroToNine(board);
+                } else
+                {
+                    choice2 = robotHard(board,player1,player2) + 1;
+                }
+                
                 board[choice2 - 1] = player2;
 
                 gameOver = checkOver(board);
 
-            } while (gameOver == "");
-            Console.WriteLine("slkdafkasjdfklsadflj;xagfdjhdsfkgjhasdfjghsdljkfvhkjdsfhbvklsjdfhgkjsdfhgljksdfhvlkhsdfgjhdasriofghsdfgusdfgiuhsdfughdrsuiogvasdfgdfgsdfgdfgsdfgsdfgsdfgdfgsdfg");
+            } while (gameOver == "no");
+
+            Console.WriteLine(gameOver);
+
             GameOver(gameOver, board, player1, player2); 
 
             return "Menu";
         }
         static void PrintBoard(string[] board)
         {
+            string[] boardCopy = { "","","","","","","","","" };
+            Array.Copy(board, boardCopy, 9);
+
+            for (int i = 0; i<9; i++ )
+            {
+                if (boardCopy[i] == " ")
+                {
+                    boardCopy[i] = "" + (i + 1);
+                }
+            }
+            
+
             Console.WriteLine("     |     |      ");
-            Console.WriteLine("  {0}  |  {1}  |  {2}", board[0], board[ 1], board[ 2]);
+            Console.WriteLine("  {0}  |  {1}  |  {2}", boardCopy[0], boardCopy[ 1], boardCopy[ 2]);
             Console.WriteLine("_____|_____|_____ ");
             Console.WriteLine("     |     |      ");
-            Console.WriteLine("  {0}  |  {1}  |  {2}", board[3], board[4], board[5]);
+            Console.WriteLine("  {0}  |  {1}  |  {2}", boardCopy[3], boardCopy[4], boardCopy[5]);
             Console.WriteLine("_____|_____|_____ ");
             Console.WriteLine("     |     |      ");
-            Console.WriteLine("  {0}  |  {1}  | {2}", board[6], board[7], board[8]);
+            Console.WriteLine("  {0}  |  {1}  |  {2}", boardCopy[6], boardCopy[7], boardCopy[8]);
             Console.WriteLine("     |     |      ");
         }
         static string ScissorsPaperRock()
@@ -183,25 +215,28 @@ namespace ConsoleApp1
         }
         static string checkOver(string[] board) {
 
-            bool tie = true;
-            foreach (string i in board)
-            {
-                Console.WriteLine(tie);
-                if (i == " ") { tie = false;  }
-            }
+            
 
-            if ( tie == true) { return "tie"; }
-            string win = "";
+            if ( checkTie(board)) { return "tie";  }
+            string win = "no";
             for (int i = 0; i<3; i++)
             {
-                if (board[i] == board[i + 1] && board[i] == board[i+2]) { win = board[i]; break; }
-                if (board[i] == board[i + 3] && board[i] == board[i + 6]) { win = board[i]; break; }
+                
+                if (board[i*3] == board[i*3 + 1] && board[i*3] == board[i*3+2] && board[i*3] != " ") { win = board[i*3];  break;  }
+                if (board[i] == board[i + 3] && board[i] == board[i + 6] && board[i] != " ") { win = board[i]; break; }
             }
-            if (board[0] == board[4] && board[0] == board[8]) { win = board[0]; }
-            if (board[2] == board[4] && board[2] == board[6]) { win = board[2]; }
-            Console.Write(win);
-            Console.WriteLine("fuck fuck fuck");
+            if (board[0] == board[4] && board[0] == board[8] && board[0] != " ") { win = board[0]; }
+            if (board[2] == board[4] && board[2] == board[6] && board[2] != " ") { win = board[2]; }
             return win;
+        }
+        static bool checkTie(string[] board)
+        {
+            foreach (string i in board)
+            {
+                if (i == " ") { return false; }
+            }
+
+            return true;
         }
         static void GameOver(string whoWon, string[] board, string player1, string player2)
         {
@@ -216,6 +251,107 @@ namespace ConsoleApp1
                 if (player1 == "O") { Console.WriteLine("Player 1 won"); }
                 else { Console.WriteLine("Player 2 won"); }
             }
+        }
+        static int robotEasy(string[] board)
+        {
+            Random rnd = new Random();
+            int robotChoice;
+            bool valid = false;
+            do
+            {
+                robotChoice = rnd.Next(0, 8);
+                if (board[robotChoice] == " ") { valid = true; }
+            } while (valid == false);
+            return robotChoice;
+
+        }
+        static int robotHard(string[] board, string player1, string player2)
+        {
+            int bestMove = -1;
+            int bestScore = -1000; 
+            List<int> moves = new List<int>();
+
+            for (int i =0; i<9; i++)
+            {
+                if (board[i] == " ") { moves.Add(i); }
+                  
+            }
+            foreach (int move in moves)
+            {
+                board[move] = player2;
+                int newScore = miniMax(board, player1, player2, 0, false);
+                board[move] = " ";
+                 if ( newScore > bestScore) { bestMove = move;  bestScore = newScore; } 
+            }
+
+
+            return bestMove;
+        }
+        static int miniMax(string [] board, string player1, string player2, int depth, bool isMax)
+        {
+            Console.WriteLine(score);
+            PrintBoard(board);
+            int score = evaluate(board, player1, player2);
+            if (score == 10) { return score; }
+            if (score == -10) { return score; }
+
+            if (checkTie(board) ) { return 0; }
+
+            if (isMax == true)
+            {
+                int best = -1000;
+
+                List<int> moves = new List<int>();
+
+                for (int i = 0; i < 9; i++)
+                {
+                    if (board[i] == " ") { moves.Add(i); }
+                }
+
+                foreach (int move in moves)
+                {
+                    board[move] = player2;
+                    best = Math.Max(best, miniMax(board, player1, player1, depth + 1, !isMax));
+                    board[move] = " ";
+                }
+                Console.WriteLine(best);
+                return best;
+            }
+            if (isMax == false)
+            {
+                int best = 1000;
+
+                List<int> moves = new List<int>();
+
+                for (int i = 0; i < 9; i++)
+                {
+                    if (board[i] == " ") { moves.Add(i); }
+                }
+
+                foreach (int move in moves)
+                {
+                    board[move] = player1;
+                    best = Math.Min(best, miniMax(board, player1, player1, depth + 1, !isMax));
+                    board[move] = " ";
+                }
+                Console.WriteLine(best);
+                return best;
+            }
+            
+            return 98032497;
+        }
+
+        static int evaluate(string[] board, string player1, string player2)
+        {
+            string win = checkOver(board);
+            Console.WriteLine(win);
+            if (win == player1) { return -10; }
+            if (win == player2) { return +10; }
+
+            
+
+            return 0;
+
         }
     }
 }
