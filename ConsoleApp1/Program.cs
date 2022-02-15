@@ -311,7 +311,7 @@ namespace ConsoleApp1
                 foreach (int move in moves)
                 {
                     board[move] = player2;
-                    best = Math.Max(best, miniMax(board, player1, player1, depth + 1, !isMax));
+                    best = Math.Max(best, miniMax(board, player1, player2, depth + 1, !isMax));
                     board[move] = " ";
                 }
                 Console.WriteLine(best);
@@ -331,7 +331,7 @@ namespace ConsoleApp1
                 foreach (int move in moves)
                 {
                     board[move] = player1;
-                    best = Math.Min(best, miniMax(board, player1, player1, depth + 1, !isMax));
+                    best = Math.Min(best, miniMax(board, player1, player2, depth + 1, !isMax));
                     board[move] = " ";
                 }
                 Console.WriteLine(best);
