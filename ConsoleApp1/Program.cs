@@ -54,7 +54,7 @@ namespace ConsoleApp1
             int numPlayers = Int16.Parse(GetInput(PlayersDict, "Please choose how many players want to play").Item2);
 
             if (numPlayers == 1) { string robotDiff = GetInput(Difficulty, "Please choose the difficulty of the AI").Item1; }
-            
+
 
             string player1 = GetInput(XorO, "Player 1 choose your todo").Item1;
             string player2 = "X";
@@ -62,7 +62,7 @@ namespace ConsoleApp1
 
 
 
-            string[] board = { " ", " ", " " ,  " ", " ", " " ,  " ", " ", " " };
+            string[] board = { " ", " ", " ", " ", " ", " ", " ", " ", " " };
             string gameOver = "";
             int choice1 = 0;
             int choice2 = 0;
@@ -74,45 +74,45 @@ namespace ConsoleApp1
                 board[choice1 - 1] = player1;
 
                 gameOver = checkOver(board);
-               
-                if (gameOver != "no") {  break; }
+
+                if (gameOver != "no") { break; }
 
                 if (numPlayers == 2)
                 {
-                     choice2 = GetZeroToNine(board);
-                } else
-                {
-                    choice2 = robotHard(board,player1,player2) + 1;
+                    choice2 = GetZeroToNine(board);
                 }
-                
+                else
+                {
+                    choice2 = robotHard(board, player1, player2) + 1;
+                }
+
                 board[choice2 - 1] = player2;
 
                 gameOver = checkOver(board);
 
             } while (gameOver == "no");
 
-            Console.WriteLine(gameOver);
 
-            GameOver(gameOver, board, player1, player2); 
+            GameOver(gameOver, board, player1, player2);
 
             return "Menu";
         }
         static void PrintBoard(string[] board)
         {
-            string[] boardCopy = { "","","","","","","","","" };
+            string[] boardCopy = { "", "", "", "", "", "", "", "", "" };
             Array.Copy(board, boardCopy, 9);
 
-            for (int i = 0; i<9; i++ )
+            for (int i = 0; i < 9; i++)
             {
                 if (boardCopy[i] == " ")
                 {
                     boardCopy[i] = "" + (i + 1);
                 }
             }
-            
+
 
             Console.WriteLine("     |     |      ");
-            Console.WriteLine("  {0}  |  {1}  |  {2}", boardCopy[0], boardCopy[ 1], boardCopy[ 2]);
+            Console.WriteLine("  {0}  |  {1}  |  {2}", boardCopy[0], boardCopy[1], boardCopy[2]);
             Console.WriteLine("_____|_____|_____ ");
             Console.WriteLine("     |     |      ");
             Console.WriteLine("  {0}  |  {1}  |  {2}", boardCopy[3], boardCopy[4], boardCopy[5]);
@@ -159,7 +159,7 @@ namespace ConsoleApp1
             return "Menu";
 
         }
-        static Tuple<string,string> GetInput(Dictionary<string, string> Options, string initialWrite)
+        static Tuple<string, string> GetInput(Dictionary<string, string> Options, string initialWrite)
         {
             string option;
             bool valid = false;
@@ -186,7 +186,6 @@ namespace ConsoleApp1
 
             }
             while (valid == false);
-            Console.WriteLine(option);
             return Tuple.Create(option, input);
         }
         static int GetZeroToNine(string[] board)
@@ -206,27 +205,29 @@ namespace ConsoleApp1
                 Console.WriteLine("Please choose the row you wish to place:");
                 string input = Console.ReadLine();
                 valid = int.TryParse(input, out choice);
-                if (choice < 0 && choice > 10) { valid = false; }
+                if (choice < 0 || choice >= 10) { valid = false; }
                 else if (board[choice - 1] != " ") { valid = false; }
                 once = true;
             } while (valid == false);
 
             return choice;
         }
-        static string checkOver(string[] board) {
+        static string checkOver(string[] board)
+        {
+
+
 
             
-
-            if ( checkTie(board)) { return "tie";  }
             string win = "no";
-            for (int i = 0; i<3; i++)
+            for (int i = 0; i < 3; i++)
             {
-                
-                if (board[i*3] == board[i*3 + 1] && board[i*3] == board[i*3+2] && board[i*3] != " ") { win = board[i*3];  break;  }
+
+                if (board[i * 3] == board[i * 3 + 1] && board[i * 3] == board[i * 3 + 2] && board[i * 3] != " ") { win = board[i * 3]; break; }
                 if (board[i] == board[i + 3] && board[i] == board[i + 6] && board[i] != " ") { win = board[i]; break; }
             }
             if (board[0] == board[4] && board[0] == board[8] && board[0] != " ") { win = board[0]; }
             if (board[2] == board[4] && board[2] == board[6] && board[2] != " ") { win = board[2]; }
+            if (checkTie(board)) { return "tie"; }
             return win;
         }
         static bool checkTie(string[] board)
@@ -242,7 +243,8 @@ namespace ConsoleApp1
         {
             PrintBoard(board);
             if (whoWon == "tie") { Console.WriteLine("The game was a tie"); }
-            if (whoWon == "X") {
+            if (whoWon == "X")
+            {
                 if (player1 == "X") { Console.WriteLine("Player 1 won"); }
                 else { Console.WriteLine("Player 2 won"); }
             }
@@ -268,34 +270,32 @@ namespace ConsoleApp1
         static int robotHard(string[] board, string player1, string player2)
         {
             int bestMove = -1;
-            int bestScore = -1000; 
+            int bestScore = -1000;
             List<int> moves = new List<int>();
 
-            for (int i =0; i<9; i++)
+            for (int i = 0; i < 9; i++)
             {
                 if (board[i] == " ") { moves.Add(i); }
-                  
+
             }
             foreach (int move in moves)
             {
                 board[move] = player2;
                 int newScore = miniMax(board, player1, player2, 0, false);
                 board[move] = " ";
-                 if ( newScore > bestScore) { bestMove = move;  bestScore = newScore; } 
+                if (newScore > bestScore) { bestMove = move; bestScore = newScore; }
             }
 
 
             return bestMove;
         }
-        static int miniMax(string [] board, string player1, string player2, int depth, bool isMax)
+        static int miniMax(string[] board, string player1, string player2, int depth, bool isMax)
         {
-            Console.WriteLine(score);
-            PrintBoard(board);
             int score = evaluate(board, player1, player2);
             if (score == 10) { return score; }
             if (score == -10) { return score; }
 
-            if (checkTie(board) ) { return 0; }
+            if (checkTie(board)) { return 0; }
 
             if (isMax == true)
             {
@@ -314,7 +314,6 @@ namespace ConsoleApp1
                     best = Math.Max(best, miniMax(board, player1, player2, depth + 1, !isMax));
                     board[move] = " ";
                 }
-                Console.WriteLine(best);
                 return best;
             }
             if (isMax == false)
@@ -334,24 +333,34 @@ namespace ConsoleApp1
                     best = Math.Min(best, miniMax(board, player1, player2, depth + 1, !isMax));
                     board[move] = " ";
                 }
-                Console.WriteLine(best);
                 return best;
             }
-            
-            return 98032497;
+
+            return 0;
         }
 
         static int evaluate(string[] board, string player1, string player2)
         {
             string win = checkOver(board);
-            Console.WriteLine(win);
             if (win == player1) { return -10; }
             if (win == player2) { return +10; }
 
-            
+
 
             return 0;
 
         }
     }
 }
+
+/*
+     |     |
+  X  |  O  |  X
+_____|_____|_____
+     |     |
+  O  |  O  |  X
+_____|_____|_____
+     |     |
+  O  |  X  |  X
+     |     |
+*/
