@@ -8,9 +8,13 @@ namespace ConsoleApp1
     {
         static void Main(string[] args)
         {
-
-
-            Console.WriteLine("Welcome to the Game Suite");
+            while (true)
+            {
+                Console.WriteLine("Welcome to the Game Suite");
+                Console.WriteLine("Press Enter to start");
+                
+            }
+            
             string state = "Menu";
             while (state != "Exit")
             {
@@ -31,96 +35,7 @@ namespace ConsoleApp1
             string option = GetInput(gameOptions, "Please choose a game to play").Item1;
             return option;
         }
-        static string NaughtsAndCrosses()
-        {
-
-            //todo
-            bool over = false;
-            Dictionary<string, string> PlayersDict =
-              new Dictionary<string, string>(){
-                {"1", "1 Player"},
-                {"2", "2 Players" } };
-            Dictionary<string, string> Difficulty =
-              new Dictionary<string, string>(){
-                {"1", "Easy"},
-                {"2", "Medium" } };
-
-
-            Dictionary<string, string> XorO =
-              new Dictionary<string, string>(){
-                {"1", "X"},
-                {"2", "O" } };
-            int turn = 1;
-            int numPlayers = Int16.Parse(GetInput(PlayersDict, "Please choose how many players want to play").Item2);
-
-            if (numPlayers == 1) { string robotDiff = GetInput(Difficulty, "Please choose the difficulty of the AI").Item1; }
-
-
-            string player1 = GetInput(XorO, "Player 1 choose your todo").Item1;
-            string player2 = "X";
-            if (player1 == "X") { player2 = "O"; }
-
-
-
-            string[] board = { " ", " ", " ", " ", " ", " ", " ", " ", " " };
-            string gameOver = "";
-            int choice1 = 0;
-            int choice2 = 0;
-            PrintBoard(board);
-            do
-            {
-                Console.WriteLine("player 1 it is your turn to choose");
-                choice1 = GetZeroToNine(board);
-                board[choice1 - 1] = player1;
-
-                gameOver = checkOver(board);
-
-                if (gameOver != "no") { break; }
-
-                if (numPlayers == 2)
-                {
-                    choice2 = GetZeroToNine(board);
-                }
-                else
-                {
-                    choice2 = robotHard(board, player1, player2) + 1;
-                }
-
-                board[choice2 - 1] = player2;
-
-                gameOver = checkOver(board);
-
-            } while (gameOver == "no");
-
-
-            GameOver(gameOver, board, player1, player2);
-
-            return "Menu";
-        }
-        static void PrintBoard(string[] board)
-        {
-            string[] boardCopy = { "", "", "", "", "", "", "", "", "" };
-            Array.Copy(board, boardCopy, 9);
-
-            for (int i = 0; i < 9; i++)
-            {
-                if (boardCopy[i] == " ")
-                {
-                    boardCopy[i] = "" + (i + 1);
-                }
-            }
-
-
-            Console.WriteLine("     |     |      ");
-            Console.WriteLine("  {0}  |  {1}  |  {2}", boardCopy[0], boardCopy[1], boardCopy[2]);
-            Console.WriteLine("_____|_____|_____ ");
-            Console.WriteLine("     |     |      ");
-            Console.WriteLine("  {0}  |  {1}  |  {2}", boardCopy[3], boardCopy[4], boardCopy[5]);
-            Console.WriteLine("_____|_____|_____ ");
-            Console.WriteLine("     |     |      ");
-            Console.WriteLine("  {0}  |  {1}  |  {2}", boardCopy[6], boardCopy[7], boardCopy[8]);
-            Console.WriteLine("     |     |      ");
-        }
+        
         static string ScissorsPaperRock()
         {
             string play = "Yes";
@@ -182,53 +97,152 @@ namespace ConsoleApp1
                 valid = Options.TryGetValue(input, out option);
                 once = true;
 
-
-
             }
             while (valid == false);
             return Tuple.Create(option, input);
         }
+
         static int GetZeroToNine(string[] board)
         {
             int choice = 0;
             bool once = false;
             bool valid = false;
 
-
-
             do
             {
+                
                 if (once == true) { Console.WriteLine("Your input was not valid please try again"); }
                 PrintBoard(board);
 
 
-                Console.WriteLine("Please choose the row you wish to place:");
                 string input = Console.ReadLine();
                 valid = int.TryParse(input, out choice);
-                if (choice < 0 || choice >= 10) { valid = false; }
+                Console.WriteLine(choice);
+                if (choice < 1 || choice > 9) { valid = false; }
                 else if (board[choice - 1] != " ") { valid = false; }
                 once = true;
+                Console.Clear();
             } while (valid == false);
 
             return choice;
         }
-        static string checkOver(string[] board)
+
+        static string NaughtsAndCrosses()
         {
 
+            bool over = false;
+            Dictionary<string, string> PlayersDict =
+              new Dictionary<string, string>(){
+                {"1", "1 Player"},
+                {"2", "2 Players" } };
+            Dictionary<string, string> Difficulty =
+              new Dictionary<string, string>(){
+                {"1", "Easy"},
+                {"2", "Hard" } };
 
 
-            
-            string win = "no";
+            Dictionary<string, string> XorO =
+              new Dictionary<string, string>(){
+                {"1", "X"},
+                {"2", "O" } };
+            int turn = 1;
+            int numPlayers = Int16.Parse(GetInput(PlayersDict, "Please choose how many players want to play").Item2);
+            string robotDiff = "";
+            if (numPlayers == 1) { robotDiff = GetInput(Difficulty, "Please choose the difficulty of the AI").Item1; }
+
+
+            string player1 = GetInput(XorO, "Player 1 choose your piece").Item1;
+            string player2 = "X";
+            if (player1 == "X") { player2 = "O"; }
+
+
+
+            string[] board = { " ", " ", " ", " ", " ", " ", " ", " ", " " };
+            string gameOver = "";
+            int choice1 = 0;
+            int choice2 = 0;
+            do
+            {
+                Console.Clear();
+                Console.WriteLine("player 1 it is your turn to choose");
+                choice1 = GetZeroToNine(board);
+                board[choice1 - 1] = player1;
+
+                gameOver = checkOver(board);
+
+
+                if (gameOver != "no") { break; }
+                Console.Clear();
+                if (numPlayers == 2)
+                {
+                    Console.WriteLine("player 2 it is your turn to choose");
+                    choice2 = GetZeroToNine(board);
+                }
+                else
+                {
+                    if (robotDiff == "Easy") { choice2 = robotEasy(board) + 1; }
+                    if (robotDiff == "Hard") { choice2 = robotHard(board, player1, player2) + 1; }
+
+                }
+
+                board[choice2 - 1] = player2;
+
+                gameOver = checkOver(board);
+
+            } while (gameOver == "no");
+
+
+            GameOver(gameOver, board, player1, player2);
+
+            return "Menu";
+        }
+        static void PrintBoard(string[] board)
+        {
+            Console.WriteLine("     |     |      ");
+            for (int i = 0; i < 3; i++)
+            {
+                for (int y = 0; y < 3; y++)
+                {
+                    string x = board[(i * 3) + y];
+                    if (x != " ")
+                    {
+                        if (x == "X") { Console.ForegroundColor = ConsoleColor.Red; }
+                        else { Console.ForegroundColor = ConsoleColor.Green; }
+                        Console.Write("  {0}", board[(i * 3) + y]);
+                    }
+                    else
+                    {
+                        Console.Write("  {0}", (i * 3 + 1) + y);
+                    }
+
+                    Console.ForegroundColor = ConsoleColor.White;
+                    if (y != 2) { Console.Write("  |"); }
+
+                }
+                Console.WriteLine();
+
+                if (i != 2)
+                {
+                    Console.WriteLine("_____|_____|_____ ");
+                    Console.WriteLine("     |     |      ");
+                }
+
+            }
+            Console.WriteLine("     |     |      ");
+        }
+        static string checkOver(string[] board)
+        {
             for (int i = 0; i < 3; i++)
             {
 
-                if (board[i * 3] == board[i * 3 + 1] && board[i * 3] == board[i * 3 + 2] && board[i * 3] != " ") { win = board[i * 3]; break; }
-                if (board[i] == board[i + 3] && board[i] == board[i + 6] && board[i] != " ") { win = board[i]; break; }
+                if (board[i * 3] == board[i * 3 + 1] && board[i * 3] == board[i * 3 + 2] && board[i * 3] != " ") { return board[i * 3]; }
+                if (board[i] == board[i + 3] && board[i] == board[i + 6] && board[i] != " ") { return board[i];  }
             }
-            if (board[0] == board[4] && board[0] == board[8] && board[0] != " ") { win = board[0]; }
-            if (board[2] == board[4] && board[2] == board[6] && board[2] != " ") { win = board[2]; }
+            if (board[0] == board[4] && board[0] == board[8] && board[0] != " ") { return board[0]; }
+            if (board[2] == board[4] && board[2] == board[6] && board[2] != " ") { return board[2]; }
             if (checkTie(board)) { return "tie"; }
-            return win;
+            return "no";
+            
         }
         static bool checkTie(string[] board)
         {
@@ -345,22 +359,8 @@ namespace ConsoleApp1
             if (win == player1) { return -10; }
             if (win == player2) { return +10; }
 
-
-
             return 0;
-
         }
     }
 }
 
-/*
-     |     |
-  X  |  O  |  X
-_____|_____|_____
-     |     |
-  O  |  O  |  X
-_____|_____|_____
-     |     |
-  O  |  X  |  X
-     |     |
-*/
