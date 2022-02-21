@@ -1,10 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Reflection;
 using System.Threading;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ConsoleApp1
 {
@@ -52,29 +48,36 @@ namespace ConsoleApp1
                 {1, "You win"},
                 {2, "You tie" },
                 {3, "You lose" } };
-            Random rnd = new Random();
+            
             Dictionary<string, string> PlayersChoice =
               new Dictionary<string, string>(){
                 {"1", "Scissors"},
                 {"2", "Paper" },
-                {"3","Rock" } };
-            Dictionary<string, string> KeepPlaying =
-              new Dictionary<string, string>(){
-                {"1", "Yes"},
-                {"2", "No" }};
+                {"3","Rock" },
+                {"4", "Exit" } };
+            
             do
             {
+                Random rnd = new Random();
                 int choice = Int16.Parse(GetInput(PlayersChoice, "Please choose which choice you wish to use").Item2);
-                int robotChoice = rnd.Next(1, 3);
+                if (choice == 4) { break; }
+                int robotChoice = rnd.Next(1, 4);
                 if (choice == robotChoice) { outcome = 2; }
                 else if (choice + 1 == robotChoice || choice - 2 == robotChoice) { outcome = 1; }
                 else if (choice == robotChoice + 1 || choice == robotChoice - 2) { outcome = 3; }
+
+                Console.WriteLine("Press enter to see the results");
+                Console.ReadLine();
+                Console.Clear();
+
                 Console.WriteLine("You Chose: " + PlayersChoice[choice.ToString()]);
                 Console.WriteLine("Your Opponent Chose: " + PlayersChoice[robotChoice.ToString()]);
+                
+
 
                 Console.WriteLine(winner[outcome]);
                 Console.WriteLine();
-                play = GetInput(KeepPlaying, "Would you like to keep playing?").Item1;
+                
             }
             while (play == "Yes");
             return "Menu";
