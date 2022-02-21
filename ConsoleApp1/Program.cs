@@ -1,20 +1,26 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Threading;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace ConsoleApp1
 {
     class Program
     {
+        public static bool start = false;
         static void Main(string[] args)
         {
-            while (true)
-            {
-                Console.WriteLine("Welcome to the Game Suite");
-                Console.WriteLine("Press Enter to start");
-                
-            }
             
+            Thread t = new Thread(new ThreadStart(EnterProgram));
+            t.Start();
+            Console.ReadLine();
+            t.Abort();
+
+
+            Console.Clear();
             string state = "Menu";
             while (state != "Exit")
             {
@@ -360,6 +366,33 @@ namespace ConsoleApp1
             if (win == player2) { return +10; }
 
             return 0;
+        }
+        static void EnterProgram()
+        {
+            string msg = "Welcome to the Game Suite";
+            string msg2 = "Press enter to continue";
+
+            Console.WriteLine("{0," + ((Console.WindowWidth / 2) + msg.Length / 2) + "}", msg);
+            while (start == false)
+            {
+                Console.WriteLine("{0," + ((Console.WindowWidth / 2) + msg2.Length / 2) + "}", msg2);
+                System.Threading.Thread.Sleep(600);
+                Console.SetCursorPosition(0, Console.CursorTop - 1);
+                ClearCurrentConsoleLine();
+
+                System.Threading.Thread.Sleep(400);
+                Console.WriteLine("{0," + ((Console.WindowWidth / 2) + msg2.Length / 2) + "}", msg2);
+                Console.SetCursorPosition(0, Console.CursorTop - 1);
+                ClearCurrentConsoleLine();
+
+            }
+        }
+        public static void ClearCurrentConsoleLine()
+        {
+            int currentLineCursor = Console.CursorTop;
+            Console.SetCursorPosition(0, Console.CursorTop);
+            Console.Write(new string(' ', Console.WindowWidth));
+            Console.SetCursorPosition(0, currentLineCursor);
         }
     }
 }
