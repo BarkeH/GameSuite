@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
-
+using System.Threading.Tasks;
 namespace ConsoleApp1
 {
     class Program
@@ -9,12 +9,14 @@ namespace ConsoleApp1
         public static bool start = false;
         static void Main(string[] args)
         {
-            
-            Thread t = new Thread(new ThreadStart(EnterProgram));
-            t.Start();
-            Console.ReadLine();
-            t.Abort();
+            CancellationTokenSource source = new CancellationTokenSource();
+            CancellationToken token = source.Token;
 
+            ThreadPool.QueueUserWorkItem(new WaitCallback(EnterProgram), source.Token);
+            
+            Console.ReadLine();
+            source.Cancel();
+            source.Dispose();
 
             Console.Clear();
             string state = "Menu";
@@ -37,7 +39,7 @@ namespace ConsoleApp1
             string option = GetInput(gameOptions, "Please choose a game to play").Item1;
             return option;
         }
-        
+
         static string ScissorsPaperRock()
         {
             string play = "Yes";
@@ -48,14 +50,14 @@ namespace ConsoleApp1
                 {1, "You win"},
                 {2, "You tie" },
                 {3, "You lose" } };
-            
+
             Dictionary<string, string> PlayersChoice =
               new Dictionary<string, string>(){
                 {"1", "Scissors"},
                 {"2", "Paper" },
                 {"3","Rock" },
                 {"4", "Exit" } };
-            
+
             do
             {
                 Random rnd = new Random();
@@ -72,12 +74,12 @@ namespace ConsoleApp1
 
                 Console.WriteLine("You Chose: " + PlayersChoice[choice.ToString()]);
                 Console.WriteLine("Your Opponent Chose: " + PlayersChoice[robotChoice.ToString()]);
-                
+
 
 
                 Console.WriteLine(winner[outcome]);
                 Console.WriteLine();
-                
+
             }
             while (play == "Yes");
             return "Menu";
@@ -119,7 +121,7 @@ namespace ConsoleApp1
 
             do
             {
-                
+
                 if (once == true) { Console.WriteLine("Your input was not valid please try again"); }
                 PrintBoard(board);
 
@@ -245,13 +247,13 @@ namespace ConsoleApp1
             {
 
                 if (board[i * 3] == board[i * 3 + 1] && board[i * 3] == board[i * 3 + 2] && board[i * 3] != " ") { return board[i * 3]; }
-                if (board[i] == board[i + 3] && board[i] == board[i + 6] && board[i] != " ") { return board[i];  }
+                if (board[i] == board[i + 3] && board[i] == board[i + 6] && board[i] != " ") { return board[i]; }
             }
             if (board[0] == board[4] && board[0] == board[8] && board[0] != " ") { return board[0]; }
             if (board[2] == board[4] && board[2] == board[6] && board[2] != " ") { return board[2]; }
             if (checkTie(board)) { return "tie"; }
             return "no";
-            
+
         }
         static bool checkTie(string[] board)
         {
@@ -370,20 +372,32 @@ namespace ConsoleApp1
 
             return 0;
         }
-        static void EnterProgram()
+        static void EnterProgram(object obj)
         {
             string msg = "Welcome to the Game Suite";
             string msg2 = "Press enter to continue";
-
+            CancellationToken token = (CancellationToken)obj;
             Console.WriteLine("{0," + ((Console.WindowWidth / 2) + msg.Length / 2) + "}", msg);
             while (start == false)
             {
                 Console.WriteLine("{0," + ((Console.WindowWidth / 2) + msg2.Length / 2) + "}", msg2);
-                System.Threading.Thread.Sleep(600);
+                for (int i = 0; i < 60; i++)
+                {
+                    if (token.IsCancellationRequested) { return; }
+                    
+
+                    System.Threading.Thread.Sleep(10);
+                }
+                
+                
                 Console.SetCursorPosition(0, Console.CursorTop - 1);
                 ClearCurrentConsoleLine();
 
-                System.Threading.Thread.Sleep(400);
+                for (int i = 0; i < 40; i++)
+                {
+                    if (token.IsCancellationRequested) { return; }
+                    System.Threading.Thread.Sleep(10);
+                }
                 Console.WriteLine("{0," + ((Console.WindowWidth / 2) + msg2.Length / 2) + "}", msg2);
                 Console.SetCursorPosition(0, Console.CursorTop - 1);
                 ClearCurrentConsoleLine();
@@ -399,4 +413,3 @@ namespace ConsoleApp1
         }
     }
 }
-
